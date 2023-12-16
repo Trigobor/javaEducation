@@ -4,8 +4,11 @@ import java.util.Arrays;
 public class Main {
     public static void main(String[] args) {
         int[] arr = new int[] {42, 12, 3, 69, 74, 0, 8};
+        int elem = 42;
         Arrays.sort(arr);
-        int rez = search(arr,  0, arr.length - 1, 42);
+        System.out.println(Arrays.toString(arr));
+        System.out.println("Ищем " + elem);
+        int rez = search(arr,  0, arr.length - 1, elem);
         if(rez == -1)
             System.out.println("Элемент не найден");
         else
