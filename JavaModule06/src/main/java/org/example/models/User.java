@@ -11,12 +11,11 @@ import java.util.Set;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "name")
     private String name;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name="user_roles",
             joinColumns=  @JoinColumn(name="user_id", referencedColumnName="id"),
             inverseJoinColumns= @JoinColumn(name="role_id", referencedColumnName="id") )
@@ -48,4 +47,11 @@ public class User {
         this.name = name;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
 }

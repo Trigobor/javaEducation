@@ -10,18 +10,15 @@ import java.util.Set;
 public class Role {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column (name = "name")
     private String name;
 
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name="user_roles",
-            joinColumns=  @JoinColumn(name="role_id", referencedColumnName="id"),
-            inverseJoinColumns= @JoinColumn(name="user_id", referencedColumnName="id") )
-    private Set<User> users = new HashSet<User>();
+    @ManyToMany(mappedBy = "roles")
+
+    private Set<User> users = new HashSet<>();
 
     public Role() {
     }
@@ -47,5 +44,13 @@ public class Role {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Set<User> getUsers() {
+        return users;
     }
 }
