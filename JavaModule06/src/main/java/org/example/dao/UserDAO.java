@@ -16,7 +16,7 @@ public class UserDAO {
     public void save(User user) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction tx1 = session.beginTransaction();
-        session.persist(user);
+        session.save(user);
         tx1.commit();
         session.close();
     }
@@ -24,7 +24,7 @@ public class UserDAO {
     public void update(User user) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction tx1 = session.beginTransaction();
-        session.persist(user);
+        session.update(user);
         tx1.commit();
         session.close();
     }
@@ -32,7 +32,7 @@ public class UserDAO {
     public void delete(User user) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction tx1 = session.beginTransaction();
-        session.persist(user);
+        session.delete(user);
         tx1.commit();
         session.close();
     }
