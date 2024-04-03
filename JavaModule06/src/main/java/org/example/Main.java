@@ -14,6 +14,9 @@ public class Main {
         Session session = sessionFactorySingletone.openSession();
         Transaction transaction = session.beginTransaction();
 
+        User broodmother = new User("broodmother");
+        Role woodman = new Role("woodman");
+        broodmother.addRole(woodman);
         /*Role Woodman = new Role("woodman");
         Woodman.setId(10);
         User Lion = new User("lion");

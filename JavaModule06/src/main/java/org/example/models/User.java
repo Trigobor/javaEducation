@@ -1,9 +1,8 @@
 package org.example.models;
 
 import jakarta.persistence.*;
-import java.util.ArrayList;
+
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -11,7 +10,8 @@ import java.util.Set;
 public class User {
 
     @Id
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     @Column(name = "name")
     private String name;
 
