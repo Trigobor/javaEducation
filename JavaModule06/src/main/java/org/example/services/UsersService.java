@@ -64,16 +64,11 @@ public class UsersService {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
 
-        User assignedUser = session.find(User.class, user.getId());
-        if (assignedUser == null)
-        {
-            //неуверен нужен ли тут роллбэк
-            transaction.rollback();
-            session.close();
-            // не понял почему исключение должно быть кастомным,
-            // когда ObjectNotFoundException так хорошо подходит
-            // и вообще не понял зачем выбрасывать тут исключение
-            // выбросил просто потому что
+        User assignedUser;
+        try {
+            assignedUser = findUserIntoBase(user, session, transaction);
+        }
+        catch (ObjectNotFoundException e){
             throw new ObjectNotFoundException(user.getId(), "User");
         }
 
@@ -91,16 +86,32 @@ public class UsersService {
         session.close();
     }
 
+    private User findUserIntoBase(User user, Session session, Transaction transaction){
+        User checkingUser = session.find(User.class, user.getId());
+        if (checkingUser == null)
+        {
+            //неуверен нужен ли тут роллбэк
+            // не понял почему исключение должно быть кастомным,
+            // когда ObjectNotFoundException так хорошо подходит
+            // и вообще не понял зачем выбрасывать тут исключение
+            // выбросил просто потому что
+            transaction.rollback();
+            session.close();
+            throw new ObjectNotFoundException(user.getId(), "User");
+        }
+        return checkingUser;
+    }
+
     public Set<Role> getRolesByUser(User user) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         // не понял нужна ли тут трансакция
         Transaction transaction = session.beginTransaction();
 
-        User checkingUser = session.find(User.class, user.getId());
-        if (checkingUser == null)
-        {
-            transaction.rollback();
-            session.close();
+        User checkingUser;
+        try {
+            checkingUser = findUserIntoBase(user, session, transaction);
+        }
+        catch (ObjectNotFoundException e){
             throw new ObjectNotFoundException(user.getId(), "User");
         }
 
@@ -114,13 +125,14 @@ public class UsersService {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
 
-        User updatingUser = session.find(User.class, user.getId());
-        if (updatingUser == null)
-        {
-            transaction.rollback();
-            session.close();
+        User updatingUser;
+        try {
+            updatingUser = findUserIntoBase(user, session, transaction);
+        }
+        catch (ObjectNotFoundException e){
             throw new ObjectNotFoundException(user.getId(), "User");
         }
+
         updatingUser.setName(user.getName());
 
         transaction.commit();
@@ -131,11 +143,11 @@ public class UsersService {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
 
-        User deletingUser = session.find(User.class, user.getId());
-        if (deletingUser == null)
-        {
-            transaction.rollback();
-            session.close();
+        User deletingUser;
+        try {
+            deletingUser = findUserIntoBase(user, session, transaction);
+        }
+        catch (ObjectNotFoundException e){
             throw new ObjectNotFoundException(user.getId(), "User");
         }
 
