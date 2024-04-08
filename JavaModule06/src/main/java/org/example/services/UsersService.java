@@ -1,14 +1,19 @@
 package org.example.services;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.example.models.Role;
 import org.example.models.User;
-import org.example.dao.UserDAO;
 import org.example.utils.HibernateSessionFactoryUtil;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class UsersService {
 
@@ -16,14 +21,28 @@ public class UsersService {
     }
 
     public User findUserByID(int id) {
-        return HibernateSessionFactoryUtil.getSessionFactory().openSession().get(User.class, id);
+        return HibernateSessionFactoryUtil
+                .getSessionFactory()
+                .openSession()
+                .get(User.class, id);
     }
 
+
+    // так и не понял как и зачем делать тут hql
+    // criteria API мне показалась более красивой
+    // все же, есть ряд вопросов
     public List<User> findAllUsers() {
-        return (List<User>)  HibernateSessionFactoryUtil.getSessionFactory().openSession().createQuery("From User").list();
+        Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+
+        Root<User> rootEntry = criteriaQuery.from(User.class);
+        CriteriaQuery<User> all = criteriaQuery.select(rootEntry);
+
+        return session.createQuery(all).getResultList();
     }
 
-    public User createUser(String userName){
+    public User createUser(String userName) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
 
@@ -35,58 +54,76 @@ public class UsersService {
         return user;
     }
 
-    public void createUsers(List <String> userNames){
+    // я сделал вместо 3-х однотипных методов в 2-х классах 1 большой и красивый
+    // вместо "добавить роль юзеру", "добавить роли юзеру", "добавить юзера ролям"
+    // я сделал 1 единственный метод, который добавляет 1 и более ролей юзеру и убрал его
+    // в юзерсервис, так как это счел логичным
+    // так же теперь этот метол проверяет существовании роли и юзера и в случае чего
+    // создает первое, или бросается исключениями
+    public void addRoleToUser(User user, Role... roles) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
 
-        for (String userName : userNames){
-            User user = new User(null, userName);
-            //session.persist(user);
+        User assignedUser = session.find(User.class, user.getId());
+        if (assignedUser == null)
+        {
+            //неуверен нужен ли тут роллбэк
+            transaction.rollback();
+            session.close();
+            // не понял почему исключение должно быть кастомным,
+            // когда ObjectNotFoundException так хорошо подходит
+            // и вообще не понял зачем выбрасывать тут исключение
+            // выбросил просто потому что
+            throw new ObjectNotFoundException(user.getId(), "User");
         }
 
-        //transaction.commit();
-        session.close();
-    }
-
-    public void addRoleToUser(User user, Role role){
-        Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-
-        user.addRole(role);
-        role.addUser(user);
-        //session.persist(role);
-        //session.persist(user);
+        for (Role role : roles) {
+            Role assignedRole = session.find(Role.class, role.getId());
+            if (assignedRole == null) {
+                assignedRole = new Role(null, role.getName());
+                session.persist(assignedRole);
+            }
+            assignedUser.addRole(assignedRole);
+            assignedRole.addUser(assignedUser);
+        }
 
         transaction.commit();
         session.close();
     }
-    public void addRolesToUser(User user, List <Role> roles){
+
+    public Set<Role> getRolesByUser(User user) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
+        // не понял нужна ли тут трансакция
         Transaction transaction = session.beginTransaction();
 
-        for (Role role : roles){
-            user.addRole(role);
-            //session.persist(role);
+        User checkingUser = session.find(User.class, user.getId());
+        if (checkingUser == null)
+        {
+            transaction.rollback();
+            session.close();
+            throw new ObjectNotFoundException(user.getId(), "User");
         }
 
-        //session.persist(user);
+        Set<Role> rez = new HashSet<>(checkingUser.getRoles());
         transaction.commit();
         session.close();
-    }
-
-    public List<Role> getRolesByUser(User user){
-        List<Role> ret = new LinkedList<>();
-        ret.addAll(user.getRoles());
-        return ret;
+        return rez;
     }
 
     public void updateUser(User user) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
 
-        session.update(user);
-        transaction.commit();
+        User updatingUser = session.find(User.class, user.getId());
+        if (updatingUser == null)
+        {
+            transaction.rollback();
+            session.close();
+            throw new ObjectNotFoundException(user.getId(), "User");
+        }
+        updatingUser.setName(user.getName());
 
+        transaction.commit();
         session.close();
     }
 
@@ -94,9 +131,19 @@ public class UsersService {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
 
-        session.remove(user);
-        transaction.commit();
+        User deletingUser = session.find(User.class, user.getId());
+        if (deletingUser == null)
+        {
+            transaction.rollback();
+            session.close();
+            throw new ObjectNotFoundException(user.getId(), "User");
+        }
 
+        Set<Role> roles = deletingUser.getRoles();
+        roles.forEach(role -> role.removeUser(deletingUser));
+        session.remove(deletingUser);
+
+        transaction.commit();
         session.close();
     }
 }

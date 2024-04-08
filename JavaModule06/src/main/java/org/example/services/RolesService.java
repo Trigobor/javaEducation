@@ -1,13 +1,19 @@
 package org.example.services;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.example.models.Role;
 import org.example.models.User;
 import org.example.utils.HibernateSessionFactoryUtil;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class RolesService {
 
@@ -15,85 +21,62 @@ public class RolesService {
     }
 
     public Role findRoleByID(int id) {
-        return HibernateSessionFactoryUtil.getSessionFactory().openSession().get(Role.class, id);
+        return HibernateSessionFactoryUtil
+                .getSessionFactory()
+                .openSession()
+                .get(Role.class, id);
     }
 
-    public List<Role> findAllUsers() {
-        return (List<Role>)  HibernateSessionFactoryUtil.getSessionFactory().openSession().createQuery("From Role").list();
-    }
-
-    public void addUserToRole(User user, Role role){
+    public List<Role> findAllRoles() {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Role> criteriaQuery = criteriaBuilder.createQuery(Role.class);
 
-        user.addRole(role);
-        role.addUser(user);
-        //session.persist(role);
-        //session.persist(user);
+        Root<Role> rootEntry = criteriaQuery.from(Role.class);
+        CriteriaQuery<Role> all = criteriaQuery.select(rootEntry);
 
-        transaction.commit();
-        session.close();
-    }
-    public void addUsersToRole(Role role, List <User> users){
-        Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-
-        for (User user : users){
-            role.addUser(user);
-            session.persist(user);
-        }
-
-        session.persist(role);
-        transaction.commit();
-        session.close();
-    }
-
-    public List<User> getUsersByRole(Role role){
-        List<User> ret = new LinkedList<>();
-        ret.addAll(role.getUsers());
-        return ret;
+        return session.createQuery(all).getResultList();
     }
 
     public void updateRole(Role role) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
 
-        session.update(role);
-        transaction.commit();
+        Role updatingRole = session.find(Role.class, role.getId());
+        if (updatingRole == null)
+        {
+            updatingRole = new Role(null, role.getName());
+            session.persist(updatingRole);
+        } else {
+            updatingRole.setName(role.getName());
+        }
 
+        transaction.commit();
         session.close();
     }
+
+
 
     public void deleteRole(Role role) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
 
-        List<User> userList = this.getUsersByRole(role);
-        if(!userList.isEmpty()) {
-            for (User user : userList) {
-                user.removeRole(role);
-                role.removeUser(user);
-            }
+        Role deletindRole = session.find(Role.class, role.getId());
+        if (deletindRole == null)
+        {
+            transaction.rollback();
+            session.close();
+            throw new ObjectNotFoundException(role.getId(), "Role");
         }
-        session.remove(role);
-        transaction.commit();
 
-        session.close();
-    }
-
-
-    public void createRoles(List <String> roleNames){
-        Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-
-        for (String roleName : roleNames){
-            Role role = new Role(null, roleName);
-            session.persist(role);
-        }
+        Set<User> users = deletindRole.getUsers();
+        users.forEach(user -> user.removeRole(deletindRole));
+        session.remove(deletindRole);
 
         transaction.commit();
         session.close();
     }
+
     public Role createRole(String roleName){
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();

@@ -11,6 +11,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import java.util.List;
+import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
@@ -41,7 +42,7 @@ public class Main {
         Role pusher = rolesService.createRole("pusher");
 
         usersService.addRoleToUser(techies, halfSup);
-        rolesService.addUserToRole(techies, fullSup);
+        usersService.addRoleToUser(techies, fullSup);
 
         User windranger = usersService.createUser("windranger");
         User rubuck = usersService.createUser("rubuck");
@@ -57,9 +58,9 @@ public class Main {
         usersService.updateUser(windranger);
         usersService.updateUser(techies);
 
-        List<Role> roles = usersService.getRolesByUser(windranger);
+        Set<Role> roles = usersService.getRolesByUser(windranger);
         for (Role role : roles){
-            System.out.println(role.getName());
+            System.out.println("Вот имя роли " + role.getName());
         }
 
         rolesService.deleteRole(pusher);
