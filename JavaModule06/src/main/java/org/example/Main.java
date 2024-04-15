@@ -1,16 +1,10 @@
 package org.example;
 
 import org.example.models.Role;
-import org.example.models.Test;
 import org.example.models.User;
 import org.example.services.RolesService;
 import org.example.services.UsersService;
-import org.example.utils.HibernateSessionFactoryUtil;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 
-import java.util.List;
 import java.util.Set;
 
 public class Main {
