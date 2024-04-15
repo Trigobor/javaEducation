@@ -13,24 +13,27 @@ public class DataBaseWatcher {
     private static DataBaseWatcher watcher;
     private static final Properties auth = new Properties();
     private static final String forName = "org.postgresql.Driver";
-    private static final String url = "jdbc:postgresql://localhost:5450/postgres";
-    private DataBaseWatcher() throws SQLException {
-        auth.put("user", "user");
-        auth.put("password", "pass");
-        connection = DriverManager.getConnection(url, auth);
-        if (connection == null)
-            System.err.println("Нет соединения с БД!");
-        else
-            System.out.println("Cоединения с БД установлено!");
-        connection.setAutoCommit(true);
-        entityManagerFactory = Persistence.createEntityManagerFactory("SomePersistenceUserName");
-    }
-    static DataBaseWatcher getWatcher() throws SQLException {
+    private static final String url = "jdbc:postgresql://localhost:5438/postgres";
+
+    private DataBaseWatcher() throws SQLException {}
+
+    public static DataBaseWatcher getWatcher() {
         if (watcher == null) {
             synchronized (DataBaseWatcher.class) {
                 if (watcher == null) {
                     try {
-                    watcher = new DataBaseWatcher();
+                        watcher = new DataBaseWatcher();
+                        auth.put("user", "user");
+                        auth.put("password", "pass");
+                        connection = DriverManager.getConnection(url, auth);
+                        if (connection == null) {
+                            System.err.println("Нет соединения с БД!");
+                        } else {
+                            System.out.println("Cоединения с БД установлено!");
+                        }
+                        connection.setAutoCommit(true);
+                        entityManagerFactory = Persistence.createEntityManagerFactory("myPersistenceUnit");
+
                     } catch (Exception e) {
                         System.out.println("sukablyad!" + e);
                     }

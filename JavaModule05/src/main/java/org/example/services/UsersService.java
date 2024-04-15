@@ -17,7 +17,7 @@ public class UsersService {
     }
 
     public User findUserByID(int id) {
-        EntityManager entityManager = DataBaseWatcher.getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
         User user = null;
         try {
             user = entityManager.find(User.class, id);
@@ -32,7 +32,7 @@ public class UsersService {
     }
 
     public List<User> findAllUsers() {
-        EntityManager entityManager = DataBaseWatcher.getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
         List<User> users = null;
         try {
             entityManager.createQuery("SELECT u FROM User u", User.class).getResultList();
@@ -51,7 +51,7 @@ public class UsersService {
     // так же теперь этот метол проверяет существовании роли и юзера и в случае чего
     // создает первое, или бросается исключениями
     public void addRoleToUser(User user, Role... roles) {
-        EntityManager entityManager = DataBaseWatcher.getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
         EntityTransaction transaction = null;
         try {
             transaction = entityManager.getTransaction();
@@ -80,7 +80,7 @@ public class UsersService {
     }
 
     public Set<Role> getRolesByUser(User user) {
-        EntityManager entityManager = DataBaseWatcher.getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
         EntityTransaction transaction = null;
         Set<Role> roles = null;
         try {
@@ -103,7 +103,7 @@ public class UsersService {
     }
 
     public void updateUser(User user) {
-        EntityManager entityManager = DataBaseWatcher.getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
         EntityTransaction transaction = null;
         try {
             transaction = entityManager.getTransaction();
@@ -124,7 +124,7 @@ public class UsersService {
     }
 
     public void deleteUser(User user) {
-        EntityManager entityManager = DataBaseWatcher.getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
         EntityTransaction transaction = null;
         try {
             transaction = entityManager.getTransaction();
@@ -148,7 +148,7 @@ public class UsersService {
     }
 
     public User createUser(String userName) {
-        EntityManager entityManager = DataBaseWatcher.getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
         EntityTransaction transaction = null;
         User user = null;
         try {

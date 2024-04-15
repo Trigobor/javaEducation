@@ -16,7 +16,7 @@ public class RolesService {
     }
 
     public Role findRoleByID(int id) {
-        EntityManager entityManager = DataBaseWatcher.getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
         Role role = null;
         try {
             role = entityManager.find(Role.class, id);
@@ -31,7 +31,7 @@ public class RolesService {
     }
 
     public List<Role> findAllRoles() {
-        EntityManager entityManager = DataBaseWatcher.getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
         List<Role> role = null;
         try {
             entityManager.createQuery("SELECT u FROM Role u", Role.class).getResultList();
@@ -44,7 +44,7 @@ public class RolesService {
     }
 
     public void updateRole(Role role) {
-        EntityManager entityManager = DataBaseWatcher.getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
         EntityTransaction transaction = null;
         try {
             transaction = entityManager.getTransaction();
@@ -66,7 +66,7 @@ public class RolesService {
 
 
     public void deleteRole(Role role) {
-        EntityManager entityManager = DataBaseWatcher.getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
         EntityTransaction transaction = null;
         try {
             transaction = entityManager.getTransaction();
@@ -90,7 +90,7 @@ public class RolesService {
     }
 
     public Role createRole(String roleName) {
-        EntityManager entityManager = DataBaseWatcher.getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
         EntityTransaction transaction = null;
         Role role = null;
         try {
