@@ -1,9 +1,11 @@
 package org.example;
 
+import jakarta.persistence.EntityManager;
 import org.example.models.Role;
 import org.example.models.User;
 import org.example.services.RolesService;
 import org.example.services.UsersService;
+import org.example.utils.DataBaseWatcher;
 
 import java.util.Set;
 
@@ -23,7 +25,7 @@ public class Main {
         transaction.commit();
         session.close();*/
 
-        RolesService rolesService = new RolesService();
+        /*RolesService rolesService = new RolesService();
         UsersService usersService = new UsersService();
 
         User techies = usersService.createUser("techies");
@@ -57,6 +59,18 @@ public class Main {
             System.out.println("Вот имя роли " + role.getName());
         }
 
-        rolesService.deleteRole(pusher);
+        rolesService.deleteRole(pusher);*/
+
+        EntityManager entityManager = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager1 = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager2 = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager3 = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager4 = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager5 = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager6 = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager7 = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager8 = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
+        EntityManager entityManager9 = DataBaseWatcher.getWatcher().getEntityManagerFactory().createEntityManager();
+
     }
 }

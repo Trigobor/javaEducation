@@ -31,7 +31,7 @@ public class DataBaseWatcher {
                         } else {
                             System.out.println("Cоединения с БД установлено!");
                         }
-                        connection.setAutoCommit(true);
+                        //connection.setAutoCommit(true); оно и так по умолчанию true
                         entityManagerFactory = Persistence.createEntityManagerFactory("myPersistenceUnit");
 
                     } catch (Exception e) {
@@ -46,7 +46,7 @@ public class DataBaseWatcher {
     public static Connection getConnection() {
         return connection;
     }
-
+    //сделать так чтобы пул подключений был ограничен и новые конешны не создавались каждый раз при обращении в метод ниже
     public static EntityManagerFactory getEntityManagerFactory() {
         return entityManagerFactory;
     }

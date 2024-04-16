@@ -96,16 +96,17 @@ public class RolesService {
     public Role createRole(String roleName) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction transaction = null;
-        Role role = null;
+        Role role = null;//Это лишнее
         try {
             transaction = session.beginTransaction();
             role = new Role(null, roleName);
             session.persist(role);
+            //проверь транзакции на коммиты
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
             }
-            e.printStackTrace();
+            e.printStackTrace();//логирование в общем-то нужно
         } finally {
             session.close();
         }

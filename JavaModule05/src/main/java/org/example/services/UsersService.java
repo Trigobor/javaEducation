@@ -67,8 +67,8 @@ public class UsersService {
                     entityManager.persist(assignedRole);
                 }
                 assignedUser.addRole(assignedRole);
-                assignedRole.addUser(assignedUser);
             }
+            transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
@@ -91,6 +91,7 @@ public class UsersService {
                 throw new EntityNotFoundException("User" + user.getId());
             }
             roles = new HashSet<>(checkingUser.getRoles());
+            transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
@@ -113,6 +114,7 @@ public class UsersService {
                 throw new EntityNotFoundException("User" + user.getId());
             }
             updatingUser.setName(user.getName());
+            transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
@@ -129,7 +131,6 @@ public class UsersService {
         try {
             transaction = entityManager.getTransaction();
             transaction.begin();
-            ;
             User deletingUser = entityManager.find(User.class, user.getId());
             if (deletingUser == null) {
                 throw new EntityNotFoundException("User" + user.getId());
@@ -137,6 +138,7 @@ public class UsersService {
             Set<Role> roles = deletingUser.getRoles();
             roles.forEach(role -> role.removeUser(deletingUser));
             entityManager.remove(deletingUser);
+            transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
