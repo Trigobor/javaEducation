@@ -1,0 +1,6 @@
+org\example\models\User.class
+org\example\Main.class
+org\example\services\RolesService.class
+org\example\utils\HibernateSessionFactoryUtil.class
+org\example\models\Role.class
+org\example\services\UsersService.class
