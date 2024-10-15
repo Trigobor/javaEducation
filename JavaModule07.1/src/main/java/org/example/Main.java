@@ -17,5 +17,18 @@ public class Main {
         CitizenService citizenService = new CitizenService();
         CityService cityService = new CityService();
         CountryService countryService = new CountryService();
+
+        List<Citizen> citizens = countryService.getCitizens(1);
+        for (Citizen citizen : citizens) {
+            System.out.println(citizen.getName());
+        }
+
+        Citizen wolverine = citizenService.createCitizen("James Howlet", 4);
+
+        System.out.println(wolverine.getName() + " now in " + wolverine.getCity().getName());
+
+        citizenService.addCitizenToCity(wolverine.getId(), 3);
+
+        System.out.println(wolverine.getName() + " now in " + wolverine.getCity().getName());
     }
 }
