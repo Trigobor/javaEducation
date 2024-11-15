@@ -1,11 +1,11 @@
-package org.example;
+package org.website;
 
 import jakarta.persistence.EntityManager;
-import org.example.models.Role;
-import org.example.models.User;
-import org.example.services.RolesService;
-import org.example.services.UsersService;
-import org.example.utils.DataBaseWatcher;
+import org.website.models.Role;
+import org.website.models.User;
+import org.website.services.RolesService;
+import org.website.services.UsersService;
+import org.website.utils.DataBaseWatcher;
 
 import java.util.Set;
 

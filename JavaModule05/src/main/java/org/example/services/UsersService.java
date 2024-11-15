@@ -1,11 +1,11 @@
-package org.example.services;
+package org.website.services;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.EntityTransaction;
-import org.example.models.Role;
-import org.example.models.User;
-import org.example.utils.DataBaseWatcher;
+import org.website.models.Role;
+import org.website.models.User;
+import org.website.utils.DataBaseWatcher;
 
 import java.util.HashSet;
 import java.util.List;
