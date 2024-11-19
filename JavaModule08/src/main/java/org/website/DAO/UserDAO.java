@@ -1,6 +1,8 @@
 package org.website.DAO;
 
 import org.website.entity.User;
+import org.website.exceptions.InvalidPasswordException;
+import org.website.exceptions.UserNotFoundException;
 import org.website.utils.HibernateSessionFactoryUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -76,6 +78,22 @@ public class UserDAO {
     public User getUserById(int id) {
         try (Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession()) {
             return session.get(User.class, id);
+        }
+    }
+
+    public User getUserByLoginAndPassword(String username, String password) {
+        try (Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession()) {
+            User user = session.get(User.class, username);
+            if (user == null) {
+                throw new UserNotFoundException(username);
+            }
+            if (!user.getPassword().equals(password)) {
+                throw new InvalidPasswordException(username);
+            }
+            return user;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("An error occurred during authentication: ", e);
         }
     }
 
