@@ -3,21 +3,21 @@ package org.website.servlets;
 import org.website.entity.User;
 import org.website.DAO.UserDAO;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/login")
-public class AuthServlet extends HttpServlet {
+@WebServlet({"/login"})
+public class LoginServlet extends HttpServlet {
     private UserDAO userDAO = new UserDAO();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("login.jsp").forward(req, resp);
+        req.getRequestDispatcher("/pages/login.jsp").forward(req, resp);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class AuthServlet extends HttpServlet {
 
         if (username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty()) {
             req.setAttribute("errorMessage", "Username and/or password cannot be empty");
-            req.getRequestDispatcher("login.jsp").forward(req, resp);
+            req.getRequestDispatcher("/pages/login.jsp").forward(req, resp);
             return;
         }
 
@@ -52,10 +52,14 @@ public class AuthServlet extends HttpServlet {
                 cookie.setMaxAge(60 * 60 * 24);
                 resp.addCookie(cookie);
             }
-            req.getRequestDispatcher("login.jsp").forward(req, resp);
+            if (user.getRole().equals("ADMIN")) {
+                req.getRequestDispatcher("/pages/admin.jsp").forward(req, resp);
+            } else {
+                req.getRequestDispatcher("/pages/user.jsp").forward(req, resp);
+            }
         }catch (Exception e) {
             req.setAttribute("errorMessage", e.getMessage());
-            req.getRequestDispatcher("login.jsp").forward(req, resp);
+            req.getRequestDispatcher("/pages/login.jsp").forward(req, resp);
         }
     }
 }

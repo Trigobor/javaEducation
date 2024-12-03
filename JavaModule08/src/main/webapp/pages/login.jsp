@@ -7,7 +7,7 @@
 </head>
 <body>
 <h1>Вход</h1>
-<form action="dashboard.jsp" method="post">
+<form method="post">
     <label for="username">Логин:</label>
     <input type="text" id="username" name="username" required><br><br>
     <label for="password">Пароль:</label>

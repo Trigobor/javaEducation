@@ -1,5 +1,6 @@
 package org.website.DAO;
 
+import org.hibernate.query.Query;
 import org.website.entity.User;
 import org.website.exceptions.InvalidPasswordException;
 import org.website.exceptions.UserNotFoundException;
@@ -83,7 +84,10 @@ public class UserDAO {
 
     public User getUserByLoginAndPassword(String username, String password) {
         try (Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession()) {
-            User user = session.get(User.class, username);
+            Query<User> query = session.createQuery("FROM User WHERE login = :username", User.class);
+            query.setParameter("username", username);
+
+            User user = query.uniqueResult();
             if (user == null) {
                 throw new UserNotFoundException(username);
             }
