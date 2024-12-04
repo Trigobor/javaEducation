@@ -21,9 +21,9 @@
 </head>
 <body>
 <h1>Вы пытаетесь пройти на страницу администратора без нужной авторизации</h1>
-<button onclick="location.href='index.jsp'">На главную</button>
-<form action="adminBlock" method="post" style="display:inline;">
-    <button type="submit">Разлогиниться</button>
+<button onclick="location.href='index'">На главную</button>
+<form action="login" method="post" style="display:inline;">
+    <button type="submit">Перезайти</button>
 </form>
 </body>
 </html>

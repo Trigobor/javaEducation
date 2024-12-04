@@ -1,13 +1,14 @@
 package org.website.filters;
 
+import jakarta.servlet.http.Cookie;
 import org.website.DAO.UserDAO;
 import org.website.entity.User;
 
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
 @WebFilter("/*")
@@ -18,15 +19,15 @@ public class AuthenticationFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest req = (HttpServletRequest) servletRequest;
-        HttpServletResponse resp = (HttpServletResponse) servletResponse;
-        String loginURI = req.getContextPath() + "/login";
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest req = (HttpServletRequest) request;
+        HttpServletResponse resp = (HttpServletResponse) response;
+        String uri = req.getRequestURI();
 
         try {
             User user = null;
-            Cookie[] cookies = req.getCookies();
 
+            Cookie[] cookies = req.getCookies();
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
                     if (cookie.getName().equals("userId")) {
@@ -37,10 +38,10 @@ public class AuthenticationFilter implements Filter {
                 }
             }
 
-            if (user == null) {
-                req.getRequestDispatcher("pages/index.jsp").forward(req, resp);
+            if ((user == null || user.getRole().getRoleName().equals("USER")) && "/JavaModule08_war_exploded/admin".equals(uri)) {
+                resp.sendRedirect(req.getContextPath() + "/adminBlock");
             } else {
-                chain.doFilter(req, resp);
+                chain.doFilter(request, response);
             }
 
         }catch (Exception e) {

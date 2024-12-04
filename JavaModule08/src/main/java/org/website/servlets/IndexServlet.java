@@ -21,6 +21,6 @@ public class IndexServlet extends HttpServlet  {
             session.invalidate();
         }
 
-        response.sendRedirect(request.getContextPath() + "/pages/login.jsp");
+        request.getRequestDispatcher("/JavaModule08_war_exploded/login").forward(request, response);
     }
 }
