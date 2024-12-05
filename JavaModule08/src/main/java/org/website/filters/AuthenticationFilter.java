@@ -11,14 +11,14 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+import static org.website.utils.URLConstants.*;
+
 
 @WebFilter("/*")
 public class AuthenticationFilter implements Filter {
     private UserDAO userDAO = new UserDAO();
 
     // я в курсе, что такое конфигурация
-    private static final String[] ADMIN_URLS = {"/JavaModule08_war_exploded/admin"};
-    private static final String ADMIN_BLOCK_URL = "/adminBlock";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -61,7 +61,7 @@ public class AuthenticationFilter implements Filter {
             // если будет время, сделай так, чтобы не просто перебрасывало
             // на страницу логина, а еще бы и ошибка там отображалась
             req.setAttribute("errorMessage", e.getMessage());
-            resp.sendRedirect(req.getContextPath() + "/login");
+            resp.sendRedirect(req.getContextPath() + LOGIN_URL);
         }
 
     }

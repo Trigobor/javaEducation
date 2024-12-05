@@ -7,6 +7,8 @@ import jakarta.servlet.annotation.WebServlet;
 
 import java.io.IOException;
 
+import static org.website.utils.URLConstants.LOGIN_URL;
+
 @WebServlet({"/", "/index"})
 public class IndexServlet extends HttpServlet  {
     @Override
@@ -22,6 +24,6 @@ public class IndexServlet extends HttpServlet  {
             session.invalidate();
         }
 
-        request.getRequestDispatcher("/JavaModule08_war_exploded/login").forward(request, response);
+        request.getRequestDispatcher(request.getContextPath() + LOGIN_URL).forward(request, response);
     }
 }

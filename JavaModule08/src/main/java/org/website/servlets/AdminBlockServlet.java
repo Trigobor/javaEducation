@@ -7,6 +7,8 @@ import jakarta.servlet.annotation.WebServlet;
 
 import java.io.IOException;
 
+import static org.website.utils.URLConstants.LOGIN_URL;
+
 @WebServlet({"/adminBlock"})
 public class AdminBlockServlet extends HttpServlet {
 
@@ -15,6 +17,6 @@ public class AdminBlockServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("/JavaModule08_war_exploded/login").forward(request, response);
+        request.getRequestDispatcher(request.getContextPath() + LOGIN_URL).forward(request, response);
     }
 }

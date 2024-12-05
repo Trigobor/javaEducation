@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+import static org.website.utils.URLConstants.*;
+
 @WebServlet({"/login"})
 public class LoginServlet extends HttpServlet {
     private UserDAO userDAO = new UserDAO();
@@ -28,7 +30,7 @@ public class LoginServlet extends HttpServlet {
 
         if (username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty()) {
             request.setAttribute("errorMessage", "Username and/or password cannot be empty");
-            response.sendRedirect(request.getContextPath() + "/login");
+            response.sendRedirect(request.getContextPath() + LOGIN_URL);
             return;
         }
 
@@ -59,15 +61,15 @@ public class LoginServlet extends HttpServlet {
             // не очень классно, что у тебя в сервлете по авторизации происходит
             // логика по выбору следующей страницы, будет время - исправь
             if (user.getRole().getRoleName().equals("ADMIN")) {
-                response.sendRedirect(request.getContextPath() + "/admin");
+                response.sendRedirect(request.getContextPath() + ADMIN_URL);
             } else {
-                response.sendRedirect(request.getContextPath() + "/user");
+                response.sendRedirect(request.getContextPath() + USER_URL);
             }
         } catch (Exception e) {
             // если будет время, сделай так, чтобы не просто перебрасывало
             // на страницу логина, а еще бы и ошибка там отображалась
             request.setAttribute("errorMessage", e.getMessage());
-            response.sendRedirect(request.getContextPath() + "/login");
+            response.sendRedirect(request.getContextPath() + LOGIN_URL);
         }
     }
 }
