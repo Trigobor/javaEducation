@@ -26,7 +26,6 @@ public class AuthenticationFilter implements Filter {
 
         try {
             User user = null;
-
             Cookie[] cookies = req.getCookies();
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
@@ -38,6 +37,8 @@ public class AuthenticationFilter implements Filter {
                 }
             }
 
+            // если не можешь закатать урлы в ENUM, то хотя бы закатай их
+            // в статический массив этого метода. Хардкодить - не хорошо
             if ((user == null || user.getRole().getRoleName().equals("USER")) && "/JavaModule08_war_exploded/admin".equals(uri)) {
                 resp.sendRedirect(req.getContextPath() + "/adminBlock");
             } else {
@@ -45,8 +46,10 @@ public class AuthenticationFilter implements Filter {
             }
 
         }catch (Exception e) {
+            // если будет время, сделай так, чтобы не просто перебрасывало
+            // на страницу логина, а еще бы и ошибка там отображалась
             req.setAttribute("errorMessage", e.getMessage());
-            req.getRequestDispatcher("/pages/login.jsp").forward(req, resp);
+            resp.sendRedirect(req.getContextPath() + "/login");
         }
 
     }

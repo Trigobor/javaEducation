@@ -17,6 +17,7 @@ public class IndexServlet extends HttpServlet  {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
 
+        //убери это
         if (session != null) {
             session.invalidate();
         }

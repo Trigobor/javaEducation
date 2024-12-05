@@ -36,6 +36,11 @@ public class LoginServlet extends HttpServlet {
             User user = null;
             Cookie[] cookies = request.getCookies();
 
+            // не очень классно, что у тебя каждый раз, когда юзер нажимает
+            // залогиниться, он автоматически разлогинивается, если будет время - исправь
+
+            // у тебя похожая логика в AuthenticationServlet,
+            // попробуй еще раз вынести код в класс-утилиту
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
                     if (cookie.getName().equals("userId")) {
@@ -51,13 +56,16 @@ public class LoginServlet extends HttpServlet {
             cookie.setMaxAge(60 * 60 * 24);
             response.addCookie(cookie);
 
-
+            // не очень классно, что у тебя в сервлете по авторизации происходит
+            // логика по выбору следующей страницы, будет время - исправь
             if (user.getRole().getRoleName().equals("ADMIN")) {
                 response.sendRedirect(request.getContextPath() + "/admin");
             } else {
                 response.sendRedirect(request.getContextPath() + "/user");
             }
         } catch (Exception e) {
+            // если будет время, сделай так, чтобы не просто перебрасывало
+            // на страницу логина, а еще бы и ошибка там отображалась
             request.setAttribute("errorMessage", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/login");
         }
