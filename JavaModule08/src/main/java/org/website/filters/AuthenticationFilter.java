@@ -11,9 +11,15 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+
 @WebFilter("/*")
 public class AuthenticationFilter implements Filter {
     private UserDAO userDAO = new UserDAO();
+
+    // я в курсе, что такое конфигурация
+    private static final String[] ADMIN_URLS = {"/JavaModule08_war_exploded/admin"};
+    private static final String ADMIN_BLOCK_URL = "/adminBlock";
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
     }
@@ -37,10 +43,16 @@ public class AuthenticationFilter implements Filter {
                 }
             }
 
-            // если не можешь закатать урлы в ENUM, то хотя бы закатай их
-            // в статический массив этого метода. Хардкодить - не хорошо
-            if ((user == null || user.getRole().getRoleName().equals("USER")) && "/JavaModule08_war_exploded/admin".equals(uri)) {
-                resp.sendRedirect(req.getContextPath() + "/adminBlock");
+            boolean isAdminUrl = false;
+            for (String adminUrl : ADMIN_URLS) {
+                if (adminUrl.equals(uri)) {
+                    isAdminUrl = true;
+                    break;
+                }
+            }
+
+            if ((user == null || user.getRole().getRoleName().equals("USER")) && isAdminUrl) {
+                resp.sendRedirect(req.getContextPath() + ADMIN_BLOCK_URL);
             } else {
                 chain.doFilter(request, response);
             }
