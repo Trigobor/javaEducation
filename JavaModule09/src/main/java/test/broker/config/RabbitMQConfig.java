@@ -3,7 +3,7 @@ package test.broker.config;
 import com.rabbitmq.client.ConnectionFactory;
 
 public class RabbitMQConfig {
-    // Название очереди
+    // Имя очереди
     public static final String QUEUE_NAME = "sharedQueue";
 
     // Хост RabbitMQ

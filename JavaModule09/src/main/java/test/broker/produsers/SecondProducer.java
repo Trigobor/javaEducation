@@ -7,7 +7,7 @@ import test.broker.config.RabbitMQConfig;
 
 public class SecondProducer {
     public static void main(String[] args) {
-        // Имя очереди
+
         String queueName = RabbitMQConfig.QUEUE_NAME;
 
         try {

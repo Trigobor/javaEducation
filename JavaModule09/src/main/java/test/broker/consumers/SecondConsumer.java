@@ -8,14 +8,14 @@ import test.broker.config.RabbitMQConfig;
 
 public class SecondConsumer {
     public static void main(String[] args) {
-        // Имя очереди
+
         String queueName = RabbitMQConfig.QUEUE_NAME;
 
         try {
             // Получаем фабрику соединений из RabbitMQConfig
             ConnectionFactory factory = RabbitMQConfig.createConnectionFactory();
 
-            // Устанавливаем соединение и канал с RabbitMQ
+            // Устанавливаем соединение, канал с RabbitMQ
             try (Connection connection = factory.newConnection();
                  Channel channel = connection.createChannel()) {
 
