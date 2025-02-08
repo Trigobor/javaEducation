@@ -1,6 +1,7 @@
 package org.example.models;
 
 import jakarta.persistence.*;
+import org.example.enums.CitizenshipStatus;
 
 @Entity
 @Table(name = "citizens")
@@ -17,12 +18,21 @@ public class Citizen {
     @JoinColumn(name = "city_id")
     private City city;
 
+    @Column (name = "salary")
+    private int salary;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "citizenship")
+    private CitizenshipStatus citizenship;
+
     public Citizen() {
     }
 
-    public Citizen(String name, City city) {
+    public Citizen(String name, City city, int salary, CitizenshipStatus citizenship) {
         this.name = name;
         this.city = city;
+        this.salary = salary;
+        this.citizenship = citizenship;
     }
 
     public Integer getId() {return id;}

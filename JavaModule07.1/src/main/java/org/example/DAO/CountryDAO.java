@@ -31,6 +31,7 @@ public class CountryDAO {
             transaction = session.beginTransaction();
             country = new Country(countryName);
             session.persist(country);
+            transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();

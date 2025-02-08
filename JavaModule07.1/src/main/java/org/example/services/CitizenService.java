@@ -2,6 +2,7 @@ package org.example.services;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.example.DAO.CitizenDAO;
+import org.example.enums.CitizenshipStatus;
 import org.example.models.Citizen;
 import org.example.models.City;
 import org.example.utils.HibernateSessionFactoryUtil;
@@ -9,36 +10,48 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public class CitizenService {
 
-    private CitizenDAO citizenDAO = new CitizenDAO();
+    private final CitizenDAO citizenDAO;
+    private final Supplier<CityService> cityServiceSupplier;
+    private final Supplier<CountryService> countryServiceSupplier;
 
-    public CitizenService() {}
+    public CitizenService(CitizenDAO citizenDAO, Supplier<CityService> cityServiceSupplier, Supplier<CountryService> countryServiceSupplier) {
+        this.citizenDAO = citizenDAO;
+        this.cityServiceSupplier = cityServiceSupplier;
+        this.countryServiceSupplier = countryServiceSupplier;
+    }
 
     public Citizen findByID(int id) {
         return citizenDAO.findById(id);
     }
 
-    public Citizen createCitizen(String citizenName, int cityID) {
-        return citizenDAO.createCitizen(citizenName, cityID);
+    public Citizen createCitizen(String citizenName, int cityID, int salary, CitizenshipStatus citizenship) {
+        return citizenDAO.createCitizen(citizenName, cityID, salary, citizenship);
     }
 
     public void addCitizenToCity(int citizenID, int cityID) {
-        Citizen citizen = citizenDAO.findById(citizenID);
-        City city = null;
+        CityService cityService = cityServiceSupplier.get();
+        City city;
+        Citizen citizen;
 
-        try (Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession()) {
-            Query<City> query = session.createQuery("from City where id = :id", City.class);
-            query.setParameter("id", cityID);
-            city = query.getSingleResult();
+        try {
+            city = cityService.findByID(cityID);
+        } catch (Exception e) {
+            throw new EntityNotFoundException("Город с ID " + cityID + " не найден.");
+        }
+        try {
+            citizen = this.findByID(citizenID);
+        } catch (Exception e) {
+            throw new EntityNotFoundException("Гражданин с ID " + citizenID + " не найден.");
         }
 
-        if (city == null) {
-            throw new EntityNotFoundException("City with id " + cityID + " not found.");
-        }
-        citizen.setCity(city);
-        citizenDAO.update(citizen);
+        city.addCitizen(citizen);
+        cityService.updateCity(city);
+        saveCitizen(citizen);
+        System.out.println("Гражданин " + citizen.getName() + " добавлен в город " + city.getName());
     }
 
     public void saveCitizen(Citizen citizen) {

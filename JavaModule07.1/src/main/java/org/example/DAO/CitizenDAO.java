@@ -1,6 +1,7 @@
 package org.example.DAO;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.example.enums.CitizenshipStatus;
 import org.example.models.Citizen;
 import org.example.models.City;
 import org.example.models.Country;
@@ -25,7 +26,7 @@ public class CitizenDAO {
         }
     }
 
-    public Citizen createCitizen(String citizenName, int cityID) {
+    public Citizen createCitizen(String citizenName, int cityID, int salary, CitizenshipStatus citizenship) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction transaction = null;
         Citizen user = null;
@@ -34,8 +35,9 @@ public class CitizenDAO {
             Query<City> query = session.createQuery("from City where id = :cityID", City.class);
             query.setParameter("cityID", cityID);
             City city = query.getSingleResult();
-            user = new Citizen(citizenName, city);
+            user = new Citizen(citizenName, city, salary, citizenship);
             session.save(user);
+            transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();

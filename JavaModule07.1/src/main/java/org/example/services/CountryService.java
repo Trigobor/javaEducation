@@ -1,6 +1,7 @@
 package org.example.services;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.example.DAO.CitizenDAO;
 import org.example.DAO.CountryDAO;
 import org.example.models.Citizen;
 import org.example.models.City;
@@ -11,13 +12,20 @@ import org.hibernate.query.Query;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class CountryService {
 
-    private CountryDAO countryDAO = new CountryDAO();
+    private final CountryDAO countryDAO;
+    private final Supplier<CityService> cityServiceSupplier;
+    private final Supplier<CitizenService> citizenServiceSupplier;
 
-    public CountryService() {}
+    public CountryService(CountryDAO countryDAO, Supplier<CityService> cityServiceSupplier, Supplier<CitizenService> citizenServiceSupplier) {
+        this.countryDAO = countryDAO;
+        this.cityServiceSupplier = cityServiceSupplier;
+        this.citizenServiceSupplier = citizenServiceSupplier;
+    }
 
     public Country findByID(int id) {
         return countryDAO.findById(id);

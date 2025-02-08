@@ -21,7 +21,26 @@ public class CityDAO {
             if (city == null) {
                 throw new EntityNotFoundException("City with id " + id + " not found.");
             }
+
+            city.getCitizens().size();
+
             return city;
+        }
+    }
+
+    public City findById(int id, boolean withCitizens) {
+        if(withCitizens) {
+            return this.findById(id);
+        } else {
+            try (Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession()) {
+                Query<City> query = session.createQuery("from City where id = :id", City.class);
+                query.setParameter("id", id);
+                City city = query.getSingleResult();
+                if (city == null) {
+                    throw new EntityNotFoundException("City with id " + id + " not found.");
+                }
+                return city;
+            }
         }
     }
 
@@ -35,6 +54,7 @@ public class CityDAO {
             Country country = query.setParameter("id", countryID).getSingleResult();
             city = new City(cityName, country);
             session.persist(city);
+            transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
