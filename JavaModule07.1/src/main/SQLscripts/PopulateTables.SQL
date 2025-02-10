@@ -102,6 +102,14 @@ INSERT INTO citizens VALUES
      0,
      'FOREIGNER');
 
+INSERT INTO citizens VALUES
+    (10,
+     4,
+     'Sharon Carter',
+     100000,
+     'LOCAL');
+
+
 CREATE SEQUENCE countries_id_autoincrement_seq START 4 INCREMENT 1;
 CREATE SEQUENCE citizens_id_autoincrement_seq START 10 INCREMENT 1;
 CREATE SEQUENCE cities_id_autoincrement_seq START 7 INCREMENT 1;

@@ -1,7 +1,6 @@
 package org.example.models;
 
 import jakarta.persistence.*;
-import org.example.enums.CitizenshipStatus;
 
 @Entity
 @Table(name = "citizens")
@@ -21,14 +20,13 @@ public class Citizen {
     @Column (name = "salary")
     private int salary;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "citizenship")
-    private CitizenshipStatus citizenship;
+    private String citizenship;
 
     public Citizen() {
     }
 
-    public Citizen(String name, City city, int salary, CitizenshipStatus citizenship) {
+    public Citizen(String name, City city, int salary, String citizenship) {
         this.name = name;
         this.city = city;
         this.salary = salary;
@@ -39,6 +37,14 @@ public class Citizen {
 
     public String getName() {
         return name;
+    }
+
+    public int getSalary() {
+        return salary;
+    }
+
+    public String getCitizenship() {
+        return citizenship;
     }
 
     public void setName(String name) {

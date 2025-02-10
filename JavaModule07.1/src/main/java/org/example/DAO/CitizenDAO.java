@@ -1,11 +1,10 @@
 package org.example.DAO;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.example.enums.CitizenshipStatus;
 import org.example.models.Citizen;
 import org.example.models.City;
-import org.example.models.Country;
 import org.example.utils.HibernateSessionFactoryUtil;
+import org.hibernate.Hibernate;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -22,11 +21,30 @@ public class CitizenDAO {
             if (citizen == null) {
                 throw new EntityNotFoundException("City with id " + id + " not found.");
             }
+
+            Hibernate.initialize(citizen.getCity());
+
             return citizen;
         }
     }
 
-    public Citizen createCitizen(String citizenName, int cityID, int salary, CitizenshipStatus citizenship) {
+    public Citizen findById(int id, boolean withCity) {
+        if (withCity) {
+            return findById(id);
+        }
+        try (Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession()) {
+            Query<Citizen> query = session.createQuery("from Citizen where id = :id", Citizen.class);
+            query.setParameter("id", id);
+            Citizen citizen = query.getSingleResult();
+            if (citizen == null) {
+                throw new EntityNotFoundException("City with id " + id + " not found.");
+            }
+            return citizen;
+        }
+    }
+
+
+    public Citizen createCitizen(String citizenName, int cityID, int salary, String citizenship) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction transaction = null;
         Citizen user = null;
@@ -52,7 +70,7 @@ public class CitizenDAO {
     public void save(Citizen citizen) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction transaction = null;
-        
+
         try {
             transaction = session.beginTransaction();
             session.persist(citizen);

@@ -11,13 +11,11 @@ CREATE TABLE cities
     city_name VARCHAR(25)
 );
 
-CREATE TYPE citizenship_status AS ENUM ('FOREIGNER', 'LOCAL', 'DUALCITIZENSHIP');
-
 CREATE TABLE citizens
 (
     id SERIAL PRIMARY KEY,
     city_id INTEGER references cities(id),
     citizen_name VARCHAR(25),
     salary INTEGER,
-    citizenship citizenship_status
+    citizenship VARCHAR(25)
 );
