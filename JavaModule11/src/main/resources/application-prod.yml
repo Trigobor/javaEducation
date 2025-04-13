@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://host.docker.internal:5432/postgres
+    username: prod_user
+    password: prod_pass
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+
+logging:
+  level:
+    org.springframework.web: INFO
+    org.hibernate.SQL: ERROR

@@ -1,12 +1,19 @@
 package com.springapp.first.javamodule11.service;
 
+import com.springapp.first.javamodule11.DTO.DishGetDTO;
+import com.springapp.first.javamodule11.DTO.DishPostDTO;
 import com.springapp.first.javamodule11.entity.Dish;
+import com.springapp.first.javamodule11.mapper.DishMapper;
 import com.springapp.first.javamodule11.repository.DishRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class DishService {
@@ -18,15 +25,35 @@ public class DishService {
         this.dishRepository = dishRepository;
     }
 
-    public List<Dish> getAllDishes() {
-        return dishRepository.findAll();
+    @PostConstruct
+    public void init() {
+        System.out.println("DishService создан");
+    }
+
+    public List<DishGetDTO> getAllDishes() {
+        return dishRepository.findAll()
+                .stream()
+                .map(DishMapper::toGetDTO)
+                .collect(Collectors.toList());
+    }
+
+    public Page<DishGetDTO> globalSearch(String keyword, Pageable pageable) {
+        Page<Dish> page = null;
+        if (keyword == null || keyword.trim().isEmpty()) {
+            page = dishRepository.findAll(pageable);
+        }
+        else {
+            page = dishRepository.searchDistinctPart(keyword, pageable);
+        }
+        return page.map(DishMapper::toGetDTO);
     }
 
     public Optional<Dish> getDishById(Long id) {
         return dishRepository.findById(id);
     }
 
-    public Dish createDish(Dish dish) {
+    public Dish createDish(DishPostDTO dto) {
+        Dish dish = DishMapper.fromPostDto(dto);
         return dishRepository.save(dish);
     }
 
