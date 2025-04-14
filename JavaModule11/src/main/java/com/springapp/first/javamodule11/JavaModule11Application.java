@@ -9,22 +9,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class JavaModule11Application implements CommandLineRunner {
+public class JavaModule11Application {
 
     @Autowired
     private DishService dishService;
 
     public static void main(String[] args) {
         SpringApplication.run(JavaModule11Application.class, args);
-    }
-
-    @Override
-    public void run(String... args) throws Exception {
-        Dish ramen = new Dish();
-        ramen.setName("Sushi");
-        ramen.setCuisine("Japanese");
-
-        dishService.createDish(DishMapper.toPostDTO(ramen));
     }
 
 }

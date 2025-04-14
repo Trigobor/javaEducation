@@ -52,6 +52,12 @@ public class DishController {
         return DishMapper.toGetDTO(created);
     }
 
+    @PutMapping("/{id}")
+    public DishGetDTO updateDish(@PathVariable Long id, @Valid @RequestBody DishPostDTO dishPostDTO) {
+        Dish updated = dishService.updateDish(id, dishPostDTO);
+        return DishMapper.toGetDTO(updated);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDish(@PathVariable Long id) {
         dishService.deleteDish(id);
