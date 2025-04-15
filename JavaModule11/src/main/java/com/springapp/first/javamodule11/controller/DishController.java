@@ -33,12 +33,20 @@ public class DishController {
         return dishService.getAllDishes();
     }
 
+    //тест для pageable дожны быть параметризованными. всего тут 4 кейса, вспомни какие
+    //нужно использовать аннотацию @MethodSource
+    //на keyword тоже должны быть тесты
+    //одлен быть один параметризованный success тест
     @GetMapping("/search")
     public Page<DishGetDTO> search(@RequestParam(required = false) String keyword,
                                    @PageableDefault(page = 0, size = 1000) Pageable pageable) {
         return dishService.globalSearch(keyword, pageable);
     }
 
+    // что будет, еси я зайду mysite.com/dishes/idushnik
+    // добавить в exceptionhandler обработку ошибок когда
+    // приходят некорректные данные в тот контроллер, чтобы пользователю выдавался 400 badrequest,
+    // сейчас это 500 MethodArgumentTypeMismatchException <- проверь что это
     @GetMapping("/{id}")
     public ResponseEntity<Dish> getDishById(@PathVariable Long id) {
         Optional<Dish> dish = dishService.getDishById(id);
