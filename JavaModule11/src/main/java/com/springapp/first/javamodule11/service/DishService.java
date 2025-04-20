@@ -9,6 +9,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,14 @@ public class DishService {
 
     public List<DishGetDTO> getAllDishes() {
         return dishRepository.findAll()
+                .stream()
+                .map(DishMapper::toGetDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<DishGetDTO> getDishesPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return dishRepository.findAll(pageable)
                 .stream()
                 .map(DishMapper::toGetDTO)
                 .collect(Collectors.toList());

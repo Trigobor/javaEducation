@@ -29,8 +29,13 @@ public class DishController {
 
     //добавить необязательный query праметр отвечающий за пагинацию
     @GetMapping
-    public List<DishGetDTO> getAllDishes() {
-        return dishService.getAllDishes();
+    public List<DishGetDTO> getAllDishes(@RequestParam(required = false) Integer page,
+                                         @RequestParam(required = false) Integer size) {
+        if (page != null && size != null) {
+            return dishService.getDishesPaginated(page, size);
+        } else {
+            return dishService.getAllDishes();
+        }
     }
 
     //тест для pageable дожны быть параметризованными. всего тут 4 кейса, вспомни какие
@@ -49,6 +54,9 @@ public class DishController {
     // сейчас это 500 MethodArgumentTypeMismatchException <- проверь что это
     @GetMapping("/{id}")
     public ResponseEntity<Dish> getDishById(@PathVariable Long id) {
+        if (id < 0) {
+            throw new IllegalArgumentException("ID не может быть отрицательным");
+        }
         Optional<Dish> dish = dishService.getDishById(id);
         return dish.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
