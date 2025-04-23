@@ -8,6 +8,7 @@ import com.springapp.first.javamodule11.service.DishService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +45,12 @@ public class DishController {
     //одлен быть один параметризованный success тест
     @GetMapping("/search")
     public Page<DishGetDTO> search(@RequestParam(required = false) String keyword,
-                                   @PageableDefault(page = 0, size = 1000) Pageable pageable) {
+                                   @RequestParam(required = false) Integer size,
+                                   @RequestParam(required = false) Integer page){
+        if (page == null || size == null) {
+            throw new IllegalArgumentException("Page и size должны присутвовать");
+        }
+        Pageable pageable = PageRequest.of(page, size);
         return dishService.globalSearch(keyword, pageable);
     }
 
