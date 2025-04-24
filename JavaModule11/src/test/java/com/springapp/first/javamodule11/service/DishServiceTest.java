@@ -178,8 +178,3 @@ public class DishServiceTest {
         verify(dishRepository, times(1)).deleteById(5L);
     }
 }
-
-// написать тесты на контроллер и написать тесты на globalExceptionHandler
-// как пример: уьрать default у метода поска для параметра pageable и написать тест,
-// который вызывает тест с валидным pageable и он должен отработатьь и написать тест
-// на вариант без pageable, где должен отработаь globalexception handler
