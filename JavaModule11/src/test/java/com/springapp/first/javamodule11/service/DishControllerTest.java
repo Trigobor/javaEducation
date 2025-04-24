@@ -3,37 +3,30 @@ package com.springapp.first.javamodule11.service;
 import com.springapp.first.javamodule11.DTO.DishGetDTO;
 import com.springapp.first.javamodule11.controller.DishController;
 import com.springapp.first.javamodule11.exception.GlobalExceptionHandler;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
 @WebMvcTest(DishController.class)
 @Import(GlobalExceptionHandler.class)
 @ExtendWith(SpringExtension.class)
@@ -48,22 +41,22 @@ class DishControllerTest {
     private static Stream<Arguments> provideSearchParameters() {
         return Stream.of(
                 // 1. Все параметры указаны — ожидаем успех
-                Arguments.of("Italian", "0", "10", 200),
+                Arguments.of("Italian", "0", "10", 200, "{\"content\":[{\"id\":1,\"name\":\"Pizza\",\"cuisine\":\"Italian\"}],\"pageable\":\"INSTANCE\",\"last\":true,\"totalPages\":1,\"totalElements\":1,\"size\":1,\"number\":0,\"sort\":{\"empty\":true,\"sorted\":false,\"unsorted\":true},\"first\":true,\"numberOfElements\":1,\"empty\":false}"),
 
                 // 2. Есть только keyword — должно быть 400
-                Arguments.of("Italian", null, null, 400),
+                Arguments.of("Italian", null, null, 400, "Page и size должны присутствовать"),
 
                 // 3. Все параметры отсутствуют — тоже 400
-                Arguments.of(null, null, null, 400),
+                Arguments.of(null, null, null, 400, "Page и size должны присутствовать"),
 
                 // 4. Только page и size — ожидаем успех
-                Arguments.of(null, "0", "10", 200)
+                Arguments.of(null, "0", "10", 200, "{\"content\":[{\"id\":1,\"name\":\"Pizza\",\"cuisine\":\"Italian\"}],\"pageable\":\"INSTANCE\",\"last\":true,\"totalPages\":1,\"totalElements\":1,\"size\":1,\"number\":0,\"sort\":{\"empty\":true,\"sorted\":false,\"unsorted\":true},\"numberOfElements\":1,\"first\":true,\"empty\":false}")
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideSearchParameters")
-    void search_testWithVariousParams(String keyword, String page, String size, int expectedStatus) throws Exception {
+    void search_testWithVariousParams(String keyword, String page, String size, int expectedStatus, String expectedBody) throws Exception {
         // Мокаем вызов сервиса только если статус ожидается как 200
         if (expectedStatus == 200) {
             DishGetDTO dto = new DishGetDTO(1L, "Pizza", "Italian");
@@ -77,8 +70,18 @@ class DishControllerTest {
         if (page != null) request = request.param("page", page);
         if (size != null) request = request.param("size", size);
 
-        mockMvc.perform(request)
+        ResultActions result = mockMvc.perform(request)
                 .andExpect(status().is(expectedStatus));
+
+        // Выглядит немного тупо, надо будет спросить у Саши какое тут элегантное решение
+        if (!expectedBody.isEmpty()) {
+            if (expectedStatus == 400) {
+            result.andExpect(content().string(expectedBody));
+            }
+            else if (expectedStatus == 200) {
+                result.andExpect(content().json(expectedBody));
+            }
+        }
     }
 }
 
