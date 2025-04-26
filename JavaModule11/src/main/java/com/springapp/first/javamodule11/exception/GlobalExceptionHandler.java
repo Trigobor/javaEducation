@@ -3,9 +3,9 @@ package com.springapp.first.javamodule11.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.HashMap;
@@ -21,8 +21,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex)
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(MissingServletRequestParameterException ex)
     {    return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 

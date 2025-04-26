@@ -39,11 +39,9 @@ public class DishController {
 
     @GetMapping("/search")
     public Page<DishGetDTO> search(@RequestParam(required = false) String keyword,
-                                   @RequestParam(required = false) Integer size,
-                                   @RequestParam(required = false) Integer page){
-        if (page == null || size == null) {
-            throw new IllegalArgumentException("Page и size должны присутствовать");
-        }
+                                   @RequestParam(required = true) Integer size,
+                                   @RequestParam(required = true) Integer page){
+
         Pageable pageable = PageRequest.of(page, size);
         return dishService.globalSearch(keyword, pageable);
     }

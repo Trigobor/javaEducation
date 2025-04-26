@@ -2,6 +2,7 @@ package com.springapp.first.javamodule11.service;
 
 import com.springapp.first.javamodule11.DTO.DishGetDTO;
 import com.springapp.first.javamodule11.DTO.DishPostDTO;
+import com.springapp.first.javamodule11.aspect.LogExecutionTime;
 import com.springapp.first.javamodule11.entity.Dish;
 import com.springapp.first.javamodule11.mapper.DishMapper;
 import com.springapp.first.javamodule11.repository.DishRepository;
@@ -47,6 +48,7 @@ public class DishService {
                 .collect(Collectors.toList());
     }
 
+    @LogExecutionTime
     public Page<DishGetDTO> globalSearch(String keyword, Pageable pageable) {
         Page<Dish> page = null;
         if (keyword == null || keyword.trim().isEmpty()) {
