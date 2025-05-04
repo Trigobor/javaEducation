@@ -14,7 +14,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class RequestCreateUpdateProductParameterDTO {
     private String productName;
-    private int quantity;
+    private Integer quantity;
     private BigDecimal price;
     private String categoryName;
     Map<String, String> parametersToProducts;

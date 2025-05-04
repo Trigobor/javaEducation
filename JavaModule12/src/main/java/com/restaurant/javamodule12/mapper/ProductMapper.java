@@ -9,6 +9,10 @@ public class ProductMapper {
         ResponseProductDTO dto = new ResponseProductDTO();
         dto.setName(product.getName());
         dto.setPrice(product.getPrice());
+        if(!product.getProductParameters().isEmpty()){
+            //TODO:надо сделать заполнять в продукте по возможности его параметры
+            return dto;
+        }
         return dto;
     }
 

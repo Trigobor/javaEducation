@@ -1,6 +1,7 @@
 package com.restaurant.javamodule12.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import java.util.List;
 @Table(name = "parameter")
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class Parameter {
