@@ -4,11 +4,10 @@ import com.restaurant.javamodule12.DTO.*;
 import com.restaurant.javamodule12.entity.Category;
 import com.restaurant.javamodule12.entity.Parameter;
 import com.restaurant.javamodule12.entity.Product;
-import com.restaurant.javamodule12.entity.ProductParameter;
 import com.restaurant.javamodule12.mapper.ParameterMapper;
 import com.restaurant.javamodule12.mapper.CategoryMapper;
-import com.restaurant.javamodule12.exception.BadRequestException;
 import com.restaurant.javamodule12.mapper.ProductMapper;
+import com.restaurant.javamodule12.validation.ProductValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,12 +27,15 @@ public class ProductManagementService {
     private final ParameterService parameterService;
     private final ProductParameterService productParameterService;
 
+    private final ProductValidator productValidator;
+
     @Autowired
-    public ProductManagementService(CategoryService categoryService, ProductService productService, ParameterService parameterService, ProductParameterService productParameterService) {
+    public ProductManagementService(CategoryService categoryService, ProductService productService, ParameterService parameterService, ProductParameterService productParameterService, ProductValidator productValidator) {
         this.categoryService = categoryService;
         this.productService = productService;
         this.parameterService = parameterService;
         this.productParameterService = productParameterService;
+        this.productValidator = productValidator;
     }
 
     public ResponseCategoryDTO addCategory(RequestCategoryDTO categoryDto) {
@@ -58,54 +60,29 @@ public class ProductManagementService {
 
     @Transactional
     public List<ResponseParameterDTO> createParametersForCategory(List<RequestParameterDTO> paramsDto, RequestCategoryDTO categoryDto) {
-        String categoryName = categoryDto.getCategoryName();
-        Category category = categoryService.getCategoryByName(categoryName);
+        Category category = categoryService.getCategoryByName(categoryDto.getCategoryName());
         return ParameterMapper.toDtoList(parameterService.addParametersList(paramsDto, category));
     }
 
     //TODO: обработать свой кастмоный BadRequestException в controllerAdvice
     @Transactional
     public ResponseProductDTO addProduct(RequestCreateUpdateProductParameterDTO productDto) {
-        if(productDto.getCategoryName().isEmpty() || productDto.getQuantity() == null || productDto.getPrice() == null){
-            throw new BadRequestException("Некорректные данные: проверьте категорию, количество или цену продукта");
-        }
+        productValidator.validateProduct(productDto);
 
-        String categoryName = productDto.getCategoryName();
-        Category category = categoryService.getCategoryByName(categoryName);
-        List<Parameter> expectedParams = category.getParameters();
+        Long id = 1L; // ты получаешь из контроллера id, если она существует, если не существует, получаешь только name,
+        // в пустой объект категории, но с id hibernate сам все подставит
+        Category asdasda = new Category(id);
+
+        Category category = categoryService.getCategoryByName(productDto.getCategoryName());
         Map<String, String> providedParams = productDto.getParametersToProducts();
-
-        List<String> missingParams = expectedParams.stream()
-                .map(Parameter::getName)
-                .filter(expectedParam -> !providedParams.containsKey(expectedParam))
-                .toList();
-
-        if(!missingParams.isEmpty()){
-            throw new BadRequestException("Не переданы значения для параметров: " + String.join(", ", missingParams));
-        }
+        List<Parameter> expectedParams = category.getParameters();
 
         //TODO: неполохо было бы вставить проверки на лишние параметры и на соответвие типов параметров, но я не знаю как это пока осуществить
+        productValidator.validateProductParameters(providedParams, expectedParams);
+
         //TODO: хорошечно подумать могу ли я НЕ перебирать expectedParams два раза
+        Product savingProduct = ProductMapper.toEntity(productDto, category, expectedParams);
 
-        Product savingProduct = new Product();
-        savingProduct.setName(productDto.getProductName());
-        savingProduct.setCategory(category);
-        savingProduct.setPrice(productDto.getPrice());
-        savingProduct.setQuantity(productDto.getQuantity());
-
-        List<ProductParameter> savingParams = expectedParams.stream()
-                .map(Parameter -> {
-                    ProductParameter productParam = new ProductParameter();
-                    productParam.setProduct(savingProduct);
-                    productParam.setParameter(Parameter);
-                    productParam.setValue(providedParams.get(Parameter.getName()));
-                    return productParam;
-                })
-                .toList();
-
-        savingProduct.setProductParameters(savingParams);
         return ProductMapper.toDTO(productService.addProduct(savingProduct));
-
     }
-
 }

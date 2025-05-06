@@ -12,6 +12,7 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+//TODO: Акстись и переиспользуй DTO, не плоди хаос
 public class RequestCreateUpdateProductParameterDTO {
     private String productName;
     private Integer quantity;

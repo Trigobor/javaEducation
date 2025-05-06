@@ -16,7 +16,7 @@ import java.util.List;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(nullable = false)
     private String name;
@@ -26,4 +26,8 @@ public class Category {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Parameter> parameters;
+
+    public Category(Long id) {
+        this.id = id;
+    }
 }
