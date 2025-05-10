@@ -8,7 +8,7 @@ CREATE TABLE category (
 -- Добавить описание с необграниченным текстовым полем
 CREATE TABLE product (
                         id SERIAL PRIMARY KEY,
-                        name VARCHAR(255) NOT NULL,
+                        name VARCHAR(255) NOT NULL UNIQUE,
                         price DECIMAL(10, 2) NOT NULL,
                         quantity INT NOT NULL,
                         category_id INT NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE product (
 -- Таблица параметров
 CREATE TABLE parameter (
                             id SERIAL PRIMARY KEY,
-                            name VARCHAR(255) NOT NULL,
+                            name VARCHAR(255) NOT NULL UNIQUE,
                             category_id INT NOT NULL,
                             parameter_type VARCHAR(50) NOT NULL,
                             CONSTRAINT fk_parameter_category

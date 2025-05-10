@@ -38,40 +38,10 @@ public class ProductManagementService {
         this.productValidator = productValidator;
     }
 
-    public ResponseCategoryDTO addCategory(RequestCategoryDTO categoryDto) {
-        Category newCategory = CategoryMapper.fromRequestDto(categoryDto);
-        return CategoryMapper.toDTO(categoryService.addCategory(newCategory));
-    }
-
-    public ResponseCategoryDTO createCategoryWithParameters(RequestCategoryDTO categoryDto, List<RequestParameterDTO> paramsDto) {
-        Category newCategory = CategoryMapper.fromRequestDto(categoryDto);
-        List<Parameter> newParameters = paramsDto.stream()
-                .map(dto -> {
-                    Parameter parameter = new Parameter();
-                    parameter.setName(dto.getName());
-                    parameter.setCategory(newCategory);
-                    parameter.setParameterType(dto.getParameterType());
-                    return parameter;
-                })
-                .toList();
-        newCategory.setParameters(newParameters);
-        return CategoryMapper.toDTO(categoryService.addCategory(newCategory));
-    }
-
-    @Transactional
-    public List<ResponseParameterDTO> createParametersForCategory(List<RequestParameterDTO> paramsDto, RequestCategoryDTO categoryDto) {
-        Category category = categoryService.getCategoryByName(categoryDto.getCategoryName());
-        return ParameterMapper.toDtoList(parameterService.addParametersList(paramsDto, category));
-    }
-
     //TODO: обработать свой кастмоный BadRequestException в controllerAdvice
     @Transactional
     public ResponseProductDTO addProduct(RequestCreateUpdateProductParameterDTO productDto) {
         productValidator.validateProduct(productDto);
-
-        Long id = 1L; // ты получаешь из контроллера id, если она существует, если не существует, получаешь только name,
-        // в пустой объект категории, но с id hibernate сам все подставит
-        Category asdasda = new Category(id);
 
         Category category = categoryService.getCategoryByName(productDto.getCategoryName());
         Map<String, String> providedParams = productDto.getParametersToProducts();

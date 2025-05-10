@@ -8,6 +8,7 @@ import com.restaurant.javamodule12.entity.Parameter;
 import com.restaurant.javamodule12.entity.Product;
 import com.restaurant.javamodule12.entity.ProductParameter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,7 @@ public class ProductMapper {
         ResponseProductDTO dto = new ResponseProductDTO();
         dto.setName(product.getName());
         dto.setPrice(product.getPrice());
+        dto.setQuantity(product.getQuantity());
         if(!product.getProductParameters().isEmpty()){
             //TODO:надо сделать заполнять в продукте по возможности его параметры
             return dto;
@@ -52,5 +54,13 @@ public class ProductMapper {
 
         product.setProductParameters(savingParameters);
         return product;
+    }
+
+    public static List<ResponseProductDTO> toDTOList(List<Product> products) {
+        List<ResponseProductDTO> dtoList = new ArrayList<>();
+        for (Product product : products) {
+            dtoList.add(toDTO(product));
+        }
+        return dtoList;
     }
 }

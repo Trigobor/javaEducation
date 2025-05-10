@@ -30,7 +30,7 @@ public class CategoryMapper {
         return category;
     }
 
-    public static ResponseCategoryDTO toDTO(Category category) {
+    public static ResponseCategoryDTO toDTOWithFullInfo(Category category) {
         List<ResponseParameterDTO> parameterDTOs = null;
         if (category.getParameters() != null) {
             parameterDTOs = category.getParameters().stream()
@@ -49,6 +49,13 @@ public class CategoryMapper {
                 category.getName(),
                 parameterDTOs,
                 productDTOs
+        );
+    }
+
+
+    public static ResponseCategoryDTO toDTO(Category category) {
+        return new ResponseCategoryDTO(
+                category.getName(), null, null
         );
     }
 }

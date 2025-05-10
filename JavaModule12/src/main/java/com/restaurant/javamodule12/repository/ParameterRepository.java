@@ -8,5 +8,4 @@ import java.util.List;
 
 @Repository
 public interface ParameterRepository  extends JpaRepository<Parameter, Long> {
-    public List<Parameter> addParameters();
 }
