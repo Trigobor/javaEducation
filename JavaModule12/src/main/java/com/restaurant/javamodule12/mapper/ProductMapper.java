@@ -2,6 +2,7 @@ package com.restaurant.javamodule12.mapper;
 
 import com.restaurant.javamodule12.DTO.RequestCreateUpdateProductParameterDTO;
 import com.restaurant.javamodule12.DTO.RequestProductDTO;
+import com.restaurant.javamodule12.DTO.ResponseFullProductInfoDTO;
 import com.restaurant.javamodule12.DTO.ResponseProductDTO;
 import com.restaurant.javamodule12.entity.Category;
 import com.restaurant.javamodule12.entity.Parameter;
@@ -9,8 +10,10 @@ import com.restaurant.javamodule12.entity.Product;
 import com.restaurant.javamodule12.entity.ProductParameter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ProductMapper {
     public static ResponseProductDTO toDTO(Product product) {
@@ -18,9 +21,27 @@ public class ProductMapper {
         dto.setName(product.getName());
         dto.setPrice(product.getPrice());
         dto.setQuantity(product.getQuantity());
-        if(!product.getProductParameters().isEmpty()){
-            //TODO:надо сделать заполнять в продукте по возможности его параметры
-            return dto;
+        return dto;
+    }
+
+    public static ResponseFullProductInfoDTO toDTOFull(Product product) {
+        ResponseFullProductInfoDTO dto = new ResponseFullProductInfoDTO();
+        dto.setProductName(product.getName());
+        dto.setPrice(product.getPrice());
+        dto.setQuantity(product.getQuantity());
+
+        if (product.getCategory() != null) {
+            dto.setCategoryName(product.getCategory().getName());
+        }
+
+        if (product.getProductParameters() != null && !product.getProductParameters().isEmpty()) {
+            Map<String, String> parametersMap = new HashMap<>(
+                    product.getProductParameters().stream()
+                            .collect(Collectors.toMap(
+                                    pp -> pp.getParameter().getName(),
+                                    ProductParameter::getValue
+                            )));
+            dto.setParametersToProducts(parametersMap);
         }
         return dto;
     }

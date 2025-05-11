@@ -9,6 +9,8 @@ import com.restaurant.javamodule12.mapper.CategoryMapper;
 import com.restaurant.javamodule12.mapper.ProductMapper;
 import com.restaurant.javamodule12.validation.ProductValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,5 +56,43 @@ public class ProductManagementService {
         Product savingProduct = ProductMapper.toEntity(productDto, category, expectedParams);
 
         return ProductMapper.toDTO(productService.addProduct(savingProduct));
+    }
+
+    @Transactional
+    public ResponseFullProductInfoDTO getProduct(String productName) {
+        Product product = productService.getProductByName(productName);
+        return ProductMapper.toDTOFull(product);
+    }
+
+    @Transactional
+    public Page<ResponseProductDTO> searchProducts(String keyword, Pageable pageable) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return productService.getAllProducts(pageable).map(ProductMapper::toDTO);
+        }
+        else {
+            return productService.searchProducts(keyword, pageable).map(ProductMapper::toDTO);
+        }
+    }
+
+    @Transactional
+    public ResponseFullProductInfoDTO changeCategoryToProduct(String productName, RequestProductChanceCategory productDto) {
+        Category category = categoryService.getCategoryByName(productDto.getNewCategoryName());
+        Product product = productService.getProductByName(productName);
+
+        return ProductMapper.toDTOFull(productService.changeCategoryToProduct(product, category, productDto.getNewParametersToProducts()));
+    }
+
+    @Transactional
+    public ResponseFullProductInfoDTO updateProduct(String productName, RequestProductDTO productDto) {
+        Product product = productService.getProductByName(productName);
+        return ProductMapper.toDTOFull(productService.updateProduct(product, productDto.getName(), productDto.getQuantity(), productDto.getPrice()));
+    }
+
+    @Transactional
+    public ResponseFullProductInfoDTO deleteProduct(String productName) {
+        Product product = productService.getProductByName(productName);
+        ResponseFullProductInfoDTO responseFullProductInfoDTO = ProductMapper.toDTOFull(product);
+        productService.deleteProduct(product);
+        return responseFullProductInfoDTO;
     }
 }

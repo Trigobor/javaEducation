@@ -5,9 +5,12 @@ import com.restaurant.javamodule12.DTO.RequestParameterDTO;
 import com.restaurant.javamodule12.DTO.ResponseParameterDTO;
 import com.restaurant.javamodule12.entity.Category;
 import com.restaurant.javamodule12.entity.Parameter;
+import com.restaurant.javamodule12.entity.Product;
+import com.restaurant.javamodule12.entity.ProductParameter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ParameterMapper {
@@ -52,5 +55,23 @@ public class ParameterMapper {
                     return parameter;
                 })
                 .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public static List<ProductParameter> toProductParameterEntityList(Product product, List<Parameter> categoryParameters, Map<String, String> newParametersToProducts) {
+        List<ProductParameter> productParameters = new ArrayList<>();
+
+        for (Parameter categoryParameter : categoryParameters) {
+            String name = categoryParameter.getName();
+            String value = newParametersToProducts.getOrDefault(name, "none");
+            ProductParameter productParameter = new ProductParameter();
+
+            productParameter.setParameter(categoryParameter);
+            productParameter.setProduct(product);
+            productParameter.setValue(value);
+
+            productParameters.add(productParameter);
+        }
+
+        return productParameters;
     }
 }
