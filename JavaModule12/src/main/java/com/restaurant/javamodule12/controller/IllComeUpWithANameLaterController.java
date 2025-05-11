@@ -84,19 +84,16 @@ public class IllComeUpWithANameLaterController {
     }
 
     //нужно бы провалидировать соответвие новых параметров категоории и новых параметров продукта
-    //нужна валидация, хоть какая-нибудь
     @PostMapping("product/{productName}/changeCategory")
-    public ResponseFullProductInfoDTO changeCategoryAndParameters(@PathVariable String productName, @RequestBody RequestProductChanceCategory requestProductChanceCategory) {
+    public ResponseFullProductInfoDTO changeCategoryAndParameters(@PathVariable String productName, @Valid @RequestBody RequestProductChanceCategory requestProductChanceCategory) {
         return productManagementService.changeCategoryToProduct(productName, requestProductChanceCategory);
     }
 
-    //updateProduct
     @PostMapping("product/{productName}/update")
-    public ResponseFullProductInfoDTO updateProduct(@Valid @RequestBody RequestProductDTO requestProductDTO, @PathVariable String productName) {
+    public ResponseFullProductInfoDTO updateProduct(@PathVariable String productName, @Valid @RequestBody RequestProductDTO requestProductDTO) {
         return productManagementService.updateProduct(productName, requestProductDTO);
     }
 
-    //deleteProduct
     @DeleteMapping("product/{productName}/delete")
     public ResponseFullProductInfoDTO deleteProduct(@PathVariable String productName) {
         return productManagementService.deleteProduct(productName);

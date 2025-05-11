@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class CategoryService {
 
@@ -19,14 +21,12 @@ public class CategoryService {
     @Autowired
     public CategoryService(CategoryRepository categoryRepository) {this.categoryRepository = categoryRepository;}
 
-    // TODO: сделать обработку DataIntegrityViolationException, когда будешь делать ControllerAdvice
     public Category addCategory(Category newCategory) {
         return categoryRepository.save(newCategory);
     }
 
-    //TODO: Сделать обработку EntityNotFoundException в ControllerAdvice
-    public Category getCategoryByName(String categoryName) {
-        return categoryRepository.findByName(categoryName);
+    public Optional<Category> getCategoryByName(String categoryName) {
+        return Optional.ofNullable(categoryRepository.findByName(categoryName));
     }
 
     public Page<Category> getAllCategories(Pageable pageable) {

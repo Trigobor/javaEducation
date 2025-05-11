@@ -3,6 +3,7 @@ package com.restaurant.javamodule12.service;
 import com.restaurant.javamodule12.DTO.*;
 import com.restaurant.javamodule12.entity.Category;
 import com.restaurant.javamodule12.entity.Product;
+import com.restaurant.javamodule12.exception.BadRequestException;
 import com.restaurant.javamodule12.mapper.CategoryMapper;
 import com.restaurant.javamodule12.mapper.ParameterMapper;
 import com.restaurant.javamodule12.mapper.ProductMapper;
@@ -44,7 +45,8 @@ public class CategoryManagementService {
 
     @Transactional
     public ResponseAddParametersToCategoryDTO addParametersToCategory(String categoryName, List<RequestParameterDTO> paramsDto) {
-        Category category = categoryService.getCategoryByName(categoryName);
+        Category category = categoryService.getCategoryByName(categoryName)
+                .orElseThrow(() -> new BadRequestException("Категории с именем" + categoryName + " не было найдено в базе данных"));
         List<Product> products = productService.getProductsBuCategoryId(category.getId());
         ResponseAddParametersToCategoryDTO addParametersToCategoryDTO = new ResponseAddParametersToCategoryDTO();
 
@@ -57,7 +59,8 @@ public class CategoryManagementService {
 
     @Transactional
     public ResponseCategoryDTO getCategory(String categoryName) {
-        Category category = categoryService.getCategoryByName(categoryName);
+        Category category = categoryService.getCategoryByName(categoryName)
+                .orElseThrow(() -> new BadRequestException("Категории с именем" + categoryName + " не было найдено в базе данных"));
         return CategoryMapper.toDTOWithFullInfo(category);
     }
 
@@ -73,14 +76,16 @@ public class CategoryManagementService {
 
     @Transactional
     public ResponseCategoryDTO updateCategory(String categoryName, RequestCategoryDTO categoryDto) {
-        Category category = categoryService.getCategoryByName(categoryName);
+        Category category = categoryService.getCategoryByName(categoryName)
+                .orElseThrow(() -> new BadRequestException("Категории с именем" + categoryName + " не было найдено в базе данных"));
         category.setName(categoryDto.getCategoryName());
         return CategoryMapper.toDTOWithFullInfo(categoryService.updateCategory(category));
     }
 
     @Transactional
     public ResponseCategoryDTO deleteCategory(String categoryName) {
-        Category category = categoryService.getCategoryByName(categoryName);
+        Category category = categoryService.getCategoryByName(categoryName)
+                .orElseThrow(() -> new BadRequestException("Категории с именем" + categoryName + " не было найдено в базе данных"));
         ResponseCategoryDTO categoryDto = CategoryMapper.toDTOWithFullInfo(category);
         categoryService.deleteCategory(category);
         return categoryDto;

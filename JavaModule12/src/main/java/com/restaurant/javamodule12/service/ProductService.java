@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -31,8 +32,8 @@ public class ProductService {
         return productRepository.findAllByCategoryId(categoryId);
     }
 
-    public Product getProductByName(String productName) {
-        return productRepository.getProductByName(productName);
+    public Optional<Product> getProductByName(String productName) {
+        return Optional.ofNullable(productRepository.getProductByName(productName));
     }
 
     public Page<Product> getAllProducts(Pageable pageable) {

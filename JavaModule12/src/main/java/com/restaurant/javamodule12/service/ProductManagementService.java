@@ -4,6 +4,7 @@ import com.restaurant.javamodule12.DTO.*;
 import com.restaurant.javamodule12.entity.Category;
 import com.restaurant.javamodule12.entity.Parameter;
 import com.restaurant.javamodule12.entity.Product;
+import com.restaurant.javamodule12.exception.BadRequestException;
 import com.restaurant.javamodule12.mapper.ParameterMapper;
 import com.restaurant.javamodule12.mapper.CategoryMapper;
 import com.restaurant.javamodule12.mapper.ProductMapper;
@@ -17,10 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 
-//TODO: насчет addProduct и createParametersForCategory поняьно, они работают с несколькими репозиториями, но вот оставшиеся методы, можно ли унести?
-// кабута можно сделать лучше и разнести функционал этого сервиса по другим сервисам
-//TODO: подумать хорошечно над тем, что по-факту этот сервис сейчас занимается 3 вещами сразу:
-// диррежирует другими сервисами, фигачит свою логику работы и перепаковывает данные
 @Service
 public class ProductManagementService {
 
@@ -40,19 +37,17 @@ public class ProductManagementService {
         this.productValidator = productValidator;
     }
 
-    //TODO: обработать свой кастмоный BadRequestException в controllerAdvice
     @Transactional
     public ResponseProductDTO addProduct(RequestCreateUpdateProductParameterDTO productDto) {
         productValidator.validateProduct(productDto);
 
-        Category category = categoryService.getCategoryByName(productDto.getCategoryName());
+        Category category = categoryService.getCategoryByName(productDto.getCategoryName())
+                .orElseThrow(() -> new BadRequestException("Категории с именем" + productDto.getCategoryName() + " не было найдено в базе данных"));
         Map<String, String> providedParams = productDto.getParametersToProducts();
         List<Parameter> expectedParams = category.getParameters();
 
-        //TODO: неполохо было бы вставить проверки на лишние параметры и на соответвие типов параметров, но я не знаю как это пока осуществить
-        productValidator.validateProductParameters(providedParams, expectedParams);
+        productValidator.detailedValidateProductParameters(providedParams, expectedParams);
 
-        //TODO: хорошечно подумать могу ли я НЕ перебирать expectedParams два раза
         Product savingProduct = ProductMapper.toEntity(productDto, category, expectedParams);
 
         return ProductMapper.toDTO(productService.addProduct(savingProduct));
@@ -60,7 +55,8 @@ public class ProductManagementService {
 
     @Transactional
     public ResponseFullProductInfoDTO getProduct(String productName) {
-        Product product = productService.getProductByName(productName);
+        Product product = productService.getProductByName(productName)
+                .orElseThrow(() -> new BadRequestException("Продукта с названием" + productName + " не было найдено в базе данных"));
         return ProductMapper.toDTOFull(product);
     }
 
@@ -76,21 +72,30 @@ public class ProductManagementService {
 
     @Transactional
     public ResponseFullProductInfoDTO changeCategoryToProduct(String productName, RequestProductChanceCategory productDto) {
-        Category category = categoryService.getCategoryByName(productDto.getNewCategoryName());
-        Product product = productService.getProductByName(productName);
+        Category category = categoryService.getCategoryByName(productDto.getNewCategoryName())
+                .orElseThrow(() -> new BadRequestException("Категории с именем" + productDto.getNewCategoryName() + " не было найдено в базе данных"));
+        Product product = productService.getProductByName(productName)
+                .orElseThrow(() -> new BadRequestException("Продукта с названием" + productName + " не было найдено в базе данных"));
+
+        productValidator.detailedValidateProductParameters(productDto.getNewParametersToProducts(), category.getParameters());
 
         return ProductMapper.toDTOFull(productService.changeCategoryToProduct(product, category, productDto.getNewParametersToProducts()));
     }
 
     @Transactional
     public ResponseFullProductInfoDTO updateProduct(String productName, RequestProductDTO productDto) {
-        Product product = productService.getProductByName(productName);
+        Product product = productService.getProductByName(productName)
+                .orElseThrow(() -> new BadRequestException("Продукта с названием" + productName + " не было найдено в базе данных"));
+
+        productValidator.validateProductUpdate(productDto.getName(), productDto.getQuantity(), productDto.getPrice(), product);
         return ProductMapper.toDTOFull(productService.updateProduct(product, productDto.getName(), productDto.getQuantity(), productDto.getPrice()));
     }
 
     @Transactional
     public ResponseFullProductInfoDTO deleteProduct(String productName) {
-        Product product = productService.getProductByName(productName);
+        Product product = productService.getProductByName(productName)
+                .orElseThrow(() -> new BadRequestException("Продукта с названием" + productName + " не было найдено в базе данных"));
+
         ResponseFullProductInfoDTO responseFullProductInfoDTO = ProductMapper.toDTOFull(product);
         productService.deleteProduct(product);
         return responseFullProductInfoDTO;
