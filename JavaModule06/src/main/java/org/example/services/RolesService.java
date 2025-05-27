@@ -1,11 +1,11 @@
-package org.example.services;
+package org.website.services;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
-import org.example.models.Role;
-import org.example.models.User;
-import org.example.utils.HibernateSessionFactoryUtil;
+import org.website.models.Role;
+import org.website.models.User;
+import org.website.utils.HibernateSessionFactoryUtil;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;

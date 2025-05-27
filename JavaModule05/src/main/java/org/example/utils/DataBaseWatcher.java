@@ -1,4 +1,4 @@
-package org.example.utils;
+package org.website.utils;
 
 import jakarta.persistence.*;
 

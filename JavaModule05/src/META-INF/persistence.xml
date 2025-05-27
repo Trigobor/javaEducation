@@ -6,8 +6,8 @@
              version="3.1">
     <!--<persistence-unit name="myPersistenceUnit" transaction-type="RESOURCE_LOCAL">
         &lt;!&ndash; <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>&ndash;&gt;
-        <class>org.example.models.User</class>
-        <class>org.example.models.Role</class>
+        <class>org.website.models.User</class>
+        <class>org.website.models.Role</class>
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5438/user"/>
