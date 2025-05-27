@@ -1,0 +1,4 @@
+DROP TABLE IF EXISTS product_parameter;
+DROP TABLE IF EXISTS parameter;
+DROP TABLE IF EXISTS product;
+DROP TABLE IF EXISTS category;

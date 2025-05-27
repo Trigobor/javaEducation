@@ -1,15 +1,18 @@
 spring:
+  application:
+    name: JavaModule12
+
   datasource:
     url: jdbc:postgresql:///postgres
     username: user
     password: pass
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: update
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
-
     properties:
       hibernate:
         jdbc:

@@ -10,6 +10,12 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
 
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 100000
+        order_inserts: true
+
 logging:
   level:
     org.springframework.web: INFO
